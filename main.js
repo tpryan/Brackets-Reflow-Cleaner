@@ -1,7 +1,7 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global define, $, brackets */
 
-/** Simple extension that adds a "File > Hello World" menu item. Inserts "Hello, world!" at cursor pos. */
+/** Simple extension that converts Reflow generated HTML and CSS into a decent starting point for handcode. */
 define(function (require, exports, module) {
     "use strict";
 
@@ -9,25 +9,31 @@ define(function (require, exports, module) {
         EditorManager  = brackets.getModule("editor/EditorManager"),
         Menus          = brackets.getModule("command/Menus");
 
+    require("reflowHTMLCleaner");
     
     // Function to run when the menu item is clicked
-    function handleHelloWorld() {
+    function handleReflowCleanHTML() {
         var editor = EditorManager.getFocusedEditor();
+
         if (editor) {
-            var insertionPos = editor.getCursorPos();
-            editor.document.replaceRange("Hello, world!", insertionPos);
+            var htmlContent = editor.document.getText();
+            var reflowHTMLCleaner = new ReflowHTMLCleaner(htmlContent, $); 
+            reflowHTMLCleaner.processHTML();
+            var doc = reflowHTMLCleaner.htmldoc;
+            var newEditorContent = "<!DOCTYPE html>" + '\n' + "<html>" + '\n' +  doc.documentElement.innerHTML + '\n' + "</html>";
+            editor.document.setText(newEditorContent);
         }
     }
     
     
     // First, register a command - a UI-less object associating an id to a handler
     var MY_COMMAND_ID = "reflowcleaner.writehello";   // package-style naming to avoid collisions
-    CommandManager.register("Reflow Cleaner", MY_COMMAND_ID, handleHelloWorld);
+    CommandManager.register("Clean Reflow HTML", MY_COMMAND_ID, handleReflowCleanHTML);
 
     // Then create a menu item bound to the command
     // The label of the menu item is the name we gave the command (see above)
     var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
     menu.addMenuItem(MY_COMMAND_ID);
 
-    exports.handleHelloWorld = handleHelloWorld;
+    exports.handleReflowCleanHTML = handleReflowCleanHTML;
 });

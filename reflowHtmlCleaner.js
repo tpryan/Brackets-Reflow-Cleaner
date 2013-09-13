@@ -1,56 +1,76 @@
-var	reflowCleaner =  {
-		
+var ReflowHTMLCleaner = function(htmlcontent, jQuery) {
+	this.htmldoc =  document.implementation.createHTMLDocument('');
+	this.jQuery = jQuery;
 
-		removeClearFixes: function (htmldoc) {
-			$(".clearfix",htmldoc).each(function( index ) {
-				$(this).removeClass( "clearfix" );
-				if ($(this).attr("class").length == 0){
-					$(this).removeAttr("class");
-				}
-			});
+	this.jQuery.fn.changeElementType = function(newType) {
+		var newElements = [];
 
-			return htmldoc;
-		},
+		$(this).each(function() {
+		    var attrs = {};
 
-		removeTextSpans : function (htmldoc) {
+		    $.each(this.attributes, function(idx, attr) {
+		        attrs[attr.nodeName] = attr.nodeValue;
+		    });
 
-			$("[id^=textspan]",htmldoc).each(function( index ) {
-			  $(this).removeAttr("id");
-			});
-			return htmldoc;
-		},
+		    var newElement = $("<" + newType + "/>", attrs).append($(this).contents());
 
-		trimWhitespace: function (htmldoc) {
-			$("*",htmldoc).each(function( index ) {
-			  $(this).innerhtml = $.trim($(this).innerhtml);
-			  
-			});
+		    $(this).replaceWith(newElement);
 
-			return htmldoc;
-		},
+		    newElements.push(newElement);
+		});
 
-		changeIDToElement: function (htmldoc, type) {
-			var el = $("[id^= " + type +  "]" , htmldoc);
-			
-			el.removeAttr("id");
-			el.changeElementType(type);
-			return htmldoc;
-		},
+		return $(newElements);
+	};
+	this.htmldoc.open();
+	this.htmldoc.write(htmlcontent);
+	this.htmldoc.close();
 
-		processHTML: function (htmldoc) {
-			htmldoc = changeIDToElement(htmldoc, "header");
-			htmldoc = changeIDToElement(htmldoc, "footer");
-			htmldoc = changeIDToElement(htmldoc, "ul");
-			htmldoc = changeIDToElement(htmldoc, "li");
-			htmldoc = changeIDToElement(htmldoc, "h1");
-			htmldoc = changeIDToElement(htmldoc, "h2");
-			htmldoc = changeIDToElement(htmldoc, "article");
-			htmldoc = changeIDToElement(htmldoc, "section");
-			htmldoc = changeIDToElement(htmldoc, "time");
-			htmldoc = removeClearFixes(htmldoc);
-			htmldoc = trimWhitespace(htmldoc);
-			htmldoc = removeTextSpans(htmldoc);
-			return htmldoc;
-		}
 
+	this.removeClearFixes = function () {
+		$(".clearfix",this.htmldoc).each(function( index ) {
+			$(this).removeClass( "clearfix" );
+			if ($(this).attr("class").length == 0){
+				$(this).removeAttr("class");
+			}
+		});
+	};
+
+	this.removeTextSpans = function () {
+		$("[id^=textspan]",this.htmldoc).each(function( index ) {
+		  $(this).removeAttr("id");
+		});
+	};
+
+	this.trimWhitespace= function () {
+		$("*",this.htmldoc).each(function( index ) {
+		  $(this).innerhtml = $.trim($(this).innerhtml);
+		});
+	};
+
+	this.changeIDToElement= function (type) {
+		var el = this.jQuery("[id^= " + type +  "]" , this.htmldoc);
+		el.removeAttr("id");
+		el.changeElementType(type);
+	};
+
+	this.processHTML= function () {
+		this.changeIDToElement("header");
+		this.changeIDToElement("footer");
+		this.changeIDToElement("ul");
+		this.changeIDToElement("li");
+		this.changeIDToElement("h1");
+		this.changeIDToElement("h2");
+		this.changeIDToElement("h3");
+		this.changeIDToElement("h4");
+		this.changeIDToElement("h5");
+		this.changeIDToElement("h6");
+		this.changeIDToElement("article");
+		this.changeIDToElement("section");
+		this.changeIDToElement("time");
+		this.removeClearFixes();
+		this.trimWhitespace();
+		this.removeTextSpans();
 	}
+
+
+};
