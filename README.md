@@ -12,3 +12,10 @@ Currently the project does the following:
 ## Future
 I'd also like to parse the CSS file and grab all of the media queries breakpoints, fonts and colors, so you have a place to refer to when trying to style the handcoded stuff.
 
+
+
+Thanks
+
+
+https://github.com/bahamas10/css-color-names
+http://forrst.com/posts/Find_the_closest_nearest_HEX_color_of_a_small-JDB

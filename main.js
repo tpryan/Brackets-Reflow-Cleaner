@@ -9,7 +9,7 @@ define(function (require, exports, module) {
         EditorManager  = brackets.getModule("editor/EditorManager"),
         Menus          = brackets.getModule("command/Menus");
 
-    require("reflowHTMLCleaner");
+    require("reflowHTMLExtractor");
     
     // Function to run when the menu item is clicked
     function handleReflowCleanHTML() {
@@ -17,9 +17,9 @@ define(function (require, exports, module) {
 
         if (editor) {
             var htmlContent = editor.document.getText();
-            var reflowHTMLCleaner = new ReflowHTMLCleaner(htmlContent, $); 
-            reflowHTMLCleaner.processHTML();
-            var doc = reflowHTMLCleaner.htmldoc;
+            var reflowHTMLExtractor = new ReflowHTMLExtractor(htmlContent, $); 
+            reflowHTMLExtractor.processHTML();
+            var doc = reflowHTMLExtractor.htmldoc;
             var newEditorContent = "<!DOCTYPE html>" + '\n' + "<html>" + '\n' +  doc.documentElement.innerHTML + '\n' + "</html>";
             editor.document.setText(newEditorContent);
         }

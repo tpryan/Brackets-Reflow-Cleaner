@@ -1,4 +1,4 @@
-var ReflowHTMLCleaner = function(htmlcontent, jQuery) {
+var ReflowHTMLExtractor = function(htmlcontent, jQuery) {
 	this.htmldoc =  document.implementation.createHTMLDocument('');
 	this.jQuery = jQuery;
 
