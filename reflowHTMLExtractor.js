@@ -1,25 +1,30 @@
-var ReflowHTMLExtractor = function(htmlcontent, jQuery) {
-	this.htmldoc =  document.implementation.createHTMLDocument('');
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*global define, document */
+
+var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
+    "use strict";
+    
+    this.htmldoc =  document.implementation.createHTMLDocument('');
 	this.jQuery = jQuery;
 
-	this.jQuery.fn.changeElementType = function(newType) {
+	this.jQuery.fn.changeElementType = function (newType) {
 		var newElements = [];
 
-		$(this).each(function() {
+		jQuery(this).each(function () {
 		    var attrs = {};
 
-		    $.each(this.attributes, function(idx, attr) {
+		    jQuery.each(this.attributes, function (idx, attr) {
 		        attrs[attr.nodeName] = attr.nodeValue;
 		    });
 
-		    var newElement = $("<" + newType + "/>", attrs).append($(this).contents());
+		    var newElement = jQuery("<" + newType + "/>", attrs).append(jQuery(this).contents());
 
-		    $(this).replaceWith(newElement);
+		    jQuery(this).replaceWith(newElement);
 
 		    newElements.push(newElement);
 		});
 
-		return $(newElements);
+		return jQuery(newElements);
 	};
 	this.htmldoc.open();
 	this.htmldoc.write(htmlcontent);
@@ -27,33 +32,33 @@ var ReflowHTMLExtractor = function(htmlcontent, jQuery) {
 
 
 	this.removeClearFixes = function () {
-		$(".clearfix",this.htmldoc).each(function( index ) {
-			$(this).removeClass( "clearfix" );
-			if ($(this).attr("class").length == 0){
-				$(this).removeAttr("class");
+		jQuery(".clearfix", this.htmldoc).each(function (index) {
+			jQuery(this).removeClass("clearfix");
+			if (jQuery(this).attr("class").length === 0) {
+				jQuery(this).removeAttr("class");
 			}
 		});
 	};
 
 	this.removeTextSpans = function () {
-		$("[id^=textspan]",this.htmldoc).each(function( index ) {
-		  $(this).removeAttr("id");
+		jQuery("[id^=textspan]", this.htmldoc).each(function (index) {
+            jQuery(this).removeAttr("id");
 		});
 	};
 
-	this.trimWhitespace= function () {
-		$("*",this.htmldoc).each(function( index ) {
-		  $(this).innerhtml = $.trim($(this).innerhtml);
+	this.trimWhitespace = function () {
+		jQuery("*", this.htmldoc).each(function (index) {
+            jQuery(this).innerhtml = jQuery.trim(jQuery(this).innerhtml);
 		});
 	};
 
-	this.changeIDToElement= function (type) {
-		var el = this.jQuery("[id^= " + type +  "]" , this.htmldoc);
+	this.changeIDToElement = function (type) {
+		var el = this.jQuery("[id^= " + type +  "]", this.htmldoc);
 		el.removeAttr("id");
 		el.changeElementType(type);
 	};
 
-	this.processHTML= function () {
+	this.processHTML = function () {
 		this.changeIDToElement("header");
 		this.changeIDToElement("footer");
 		this.changeIDToElement("ul");
@@ -70,7 +75,7 @@ var ReflowHTMLExtractor = function(htmlcontent, jQuery) {
 		this.removeClearFixes();
 		this.trimWhitespace();
 		this.removeTextSpans();
-	}
+	};
 
 
 };

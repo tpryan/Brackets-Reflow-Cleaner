@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
-/*global define, $, brackets */
+/*global define, $, brackets, ReflowHTMLExtractor, ReflowCSSExtractor */
 
 /** Simple extension that converts Reflow generated HTML and CSS into a decent starting point for handcode. */
 define(function (require, exports, module) {
@@ -20,24 +20,24 @@ define(function (require, exports, module) {
 
         if (editor) {
             var editorContent = editor.document.getText();
+            var newEditorContent  = "";
             var extension = editor.document.file.name.split('.').pop();
             console.log(editor);
             console.log(extension);
 
-            if (extension === "css"){
+            if (extension === "css") {
                 var reflowCSSExtractor = new ReflowCSSExtractor(editorContent, $);
                 var report = reflowCSSExtractor.createReport();
-                var breakpoints = reflowCSSExtractor.createBreakPointsCode(); 
-                var newEditorContent  = report + breakpoints;
+                var breakpoints = reflowCSSExtractor.createBreakPointsCode();
+                newEditorContent  = report + breakpoints;
 
                 editor.document.setText(newEditorContent);
 
-            }
-            else if (extension === "html") {
-                var reflowHTMLExtractor = new ReflowHTMLExtractor(editorContent, $); 
+            } else if (extension === "html") {
+                var reflowHTMLExtractor = new ReflowHTMLExtractor(editorContent, $);
                 reflowHTMLExtractor.processHTML();
                 var doc = reflowHTMLExtractor.htmldoc;
-                var newEditorContent = "<!DOCTYPE html>" + '\n' + "<html>" + '\n' +  doc.documentElement.innerHTML + '\n' + "</html>";
+                newEditorContent = "<!DOCTYPE html>" + '\n' + "<html>" + '\n' +  doc.documentElement.innerHTML + '\n' + "</html>";
                 editor.document.setText(newEditorContent);
             }
 
