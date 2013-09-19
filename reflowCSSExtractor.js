@@ -1,9 +1,12 @@
-var ReflowCSSExtractor = function(csscontent) {
-
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
+/*global define, CSSParser */
+var ReflowCSSExtractor = function (csscontent) {
+    "use strict";
+    
 	var parser = new CSSParser();
 	var sheet = parser.parse(csscontent, false, true);
 
-	this.createReport = function(){
+	this.createReport = function () {
 
 		var colors = this.findColors();
 		var fonts = this.findFonts();
@@ -13,11 +16,11 @@ var ReflowCSSExtractor = function(csscontent) {
 		report += "/*"  + "\n";
 		report += "****** Colors extracted from Reflow ******" + "\n";
 
-		for (color in colors) {
+		for (var color in colors) {
 			var colorObj = colors[color];
 			var colorItem = "//";
 			var rgbString = "rgb(" + colorObj.rgb.r + "," + colorObj.rgb.g + "," + colorObj.rgb.b + ")" + "\t";
-			colorItem += colorObj.name; 
+			colorItem += colorObj.name;
 
 			for (var i = 0; i < 25-colorObj.name.length; i++){
 				colorItem += space;
@@ -40,7 +43,8 @@ var ReflowCSSExtractor = function(csscontent) {
 		report += "\n";
 
 		report += "****** Fonts extracted from Reflow ******" + "\n";
-		for (font in fonts) {
+        
+		for (var font in fonts) {
 			var fontObj = fonts[font];
 			var fontItem = "//";
 			fontItem += fontObj.name + "\t";
@@ -59,7 +63,7 @@ var ReflowCSSExtractor = function(csscontent) {
 		var code = "";
 
 
-		for (breakpoint in breakpoints) {
+		for (var breakpoint in breakpoints) {
 			var bpText = breakpoints[breakpoint];
 			var bp = "@media " + bpText + "{"+ "\n\n" + "}" + "\n\n";
 			code += bp + "\n"
