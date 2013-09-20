@@ -170,7 +170,7 @@ var ReflowCSSExtractor = function (csscontent) {
     
 	var parser = new CSSParser();
 	var sheet = parser.parse(csscontent, false, true);
-    
+    this.sheet = sheet;
     this.createReportColorLine = function (colorObj) {
         var space = " ";
         var colorItem = "//";
@@ -271,8 +271,8 @@ var ReflowCSSExtractor = function (csscontent) {
                     var rule = sheet.cssRules[i].declarations[j];
                     if (rule.property === "color" || rule.property === "background-color") {
                         var color = this.toHex(rule.valueText);
-    
-                        if (result.hasOwnProperty("count")) {
+            
+                        if (typeof result[color] !== "undefined") {
                             result[color].count++;
                         } else {
                             result[color] = {};
@@ -301,7 +301,7 @@ var ReflowCSSExtractor = function (csscontent) {
                     if (sheet.cssRules[i].declarations[j].property === "font-family") {
                         var font = sheet.cssRules[i].declarations[j].valueText;
     
-                        if (result.hasOwnProperty("count")) {
+                        if (typeof result[font] !== "undefined") {
                             result[font].count++;
                         } else {
                             result[font] = {};

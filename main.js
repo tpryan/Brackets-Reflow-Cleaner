@@ -26,7 +26,7 @@ define(function (require, exports, module) {
             console.log(extension);
 
             if (extension === "css") {
-                var reflowCSSExtractor = new ReflowCSSExtractor(editorContent, $);
+                var reflowCSSExtractor = new ReflowCSSExtractor(editorContent);
                 var report = reflowCSSExtractor.createReport();
                 var breakpoints = reflowCSSExtractor.createBreakPointsCode();
                 newEditorContent  = report + breakpoints;
@@ -52,8 +52,10 @@ define(function (require, exports, module) {
 
     // Then create a menu item bound to the command
     // The label of the menu item is the name we gave the command (see above)
-    var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
-    menu.addMenuItem(MY_COMMAND_ID);
-
-    exports.handleReflowClean = handleReflowClean;
+    var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
+    if (typeof menu !== "undefined") {
+        menu.addMenuItem(MY_COMMAND_ID);
+        exports.handleReflowClean = handleReflowClean;
+    }
+    
 });
