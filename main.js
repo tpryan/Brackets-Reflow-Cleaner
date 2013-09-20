@@ -15,7 +15,7 @@ define(function (require, exports, module) {
     
     
     // Function to run when the menu item is clicked
-    function handleReflowCleanHTML() {
+    function handleReflowClean() {
         var editor = EditorManager.getFocusedEditor();
 
         if (editor) {
@@ -48,12 +48,12 @@ define(function (require, exports, module) {
     
     // First, register a command - a UI-less object associating an id to a handler
     var MY_COMMAND_ID = "reflowcleaner.writehello";   // package-style naming to avoid collisions
-    CommandManager.register("Extract from Reflow Content", MY_COMMAND_ID, handleReflowCleanHTML);
+    CommandManager.register("Extract from Reflow Content", MY_COMMAND_ID, handleReflowClean);
 
     // Then create a menu item bound to the command
     // The label of the menu item is the name we gave the command (see above)
     var menu = Menus.getMenu(Menus.AppMenuBar.FILE_MENU);
     menu.addMenuItem(MY_COMMAND_ID);
 
-    exports.handleReflowCleanHTML = handleReflowCleanHTML;
+    exports.handleReflowClean = handleReflowClean;
 });
