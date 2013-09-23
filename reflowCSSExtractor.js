@@ -253,7 +253,9 @@ var ReflowCSSExtractor = function (csscontent) {
             }
 		}
 		report += "\n";
-
+        report += "// * means that color name is the closest match" + "\n";
+        report += "//---------------------------------------------------------------------" + "\n";
+        report += "\n";
 		report += "****** Fonts extracted from Reflow ******" + "\n";
         
 		for (font in fonts) {
@@ -268,6 +270,7 @@ var ReflowCSSExtractor = function (csscontent) {
 		}
 
 		report += "*/" + "\n";
+        
 
 		return report;
 	};
@@ -278,7 +281,8 @@ var ReflowCSSExtractor = function (csscontent) {
 		var code = "";
         var breakpoint = "";
 
-
+        code += "\n";
+        code += "/****** Breakpoints extracted from Reflow ******/" + "\n";
 		for (breakpoint in breakpoints) {
             if (breakpoints.hasOwnProperty(breakpoint)) {
                 var bpText = breakpoints[breakpoint];
