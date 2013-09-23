@@ -181,7 +181,7 @@ var ReflowCSSExtractor = function (csscontent) {
         
         colorItem += colorObj.hex;
         
-        colorItem += this.nSpaces(2);
+        colorItem += this.nSpaces(3);
         
         colorItem += rgbString;
         
@@ -229,7 +229,6 @@ var ReflowCSSExtractor = function (csscontent) {
         var font = "";
         
         var sortFunction = function (a, b) {
-            console.log("Sort called");
             if (a.count > b.count) {
                 return -1;
             }
@@ -239,8 +238,12 @@ var ReflowCSSExtractor = function (csscontent) {
             return 0;
         };
         
+        colors.sort(sortFunction);
+        
 		report += "/*"  + "\n";
 		report += "****** Colors extracted from Reflow ******" + "\n";
+        report += "// hex value RGB value         Closest color   Used      isBackground?" + "\n";
+        report += "//---------------------------------------------------------------------" + "\n";
 
 		for (color in colors) {
             if (colors.hasOwnProperty(color)) {
