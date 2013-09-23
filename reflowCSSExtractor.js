@@ -206,7 +206,6 @@ var ReflowCSSExtractor = function (csscontent) {
             colorItem += "background";
         }
         
-        console.log(colorObj);
         
         return colorItem;
     };
@@ -228,7 +227,18 @@ var ReflowCSSExtractor = function (csscontent) {
 		var space = " ";
         var color = "";
         var font = "";
-
+        
+        var sortFunction = function (a, b) {
+            console.log("Sort called");
+            if (a.count > b.count) {
+                return -1;
+            }
+            if (a.count < b.count) {
+                return 1;
+            }
+            return 0;
+        };
+        
 		report += "/*"  + "\n";
 		report += "****** Colors extracted from Reflow ******" + "\n";
 
@@ -281,7 +291,9 @@ var ReflowCSSExtractor = function (csscontent) {
 	};
 
 	this.findColors = function () {
-		var result = [];
+		var results = [];
+        var resultArray = [];
+        var index = "";
         var i = 0;
 		for (i = 0; i < sheet.cssRules.length; i++) {
             var j = 0;
@@ -293,23 +305,31 @@ var ReflowCSSExtractor = function (csscontent) {
                     if (rule.property === "color" || rule.property === "background-color") {
                         var color = this.toHex(rule.valueText);
             
-                        if (typeof result[color] !== "undefined") {
-                            result[color].count++;
+                        if (typeof results[color] !== "undefined") {
+                            results[color].count++;
                         } else {
-                            result[color] = {};
-                            result[color].count = 1;
-                            result[color].name = this.hexToName(color);
-                            result[color].hex = color;
-                            result[color].rgb = this.hexToRGB(color);
-                            result[color].original = rule.valueText;
+                            results[color] = {};
+                            results[color].count = 1;
+                            results[color].name = this.hexToName(color);
+                            results[color].hex = color;
+                            results[color].rgb = this.hexToRGB(color);
+                            results[color].original = rule.valueText;
                         }
                         
-                        result[color].usedAsBackground = (rule.property === "background-color");
+                        results[color].usedAsBackground = (rule.property === "background-color");
                     }
                 }
             }
 	    }
-	    return result;
+        
+        //convert back to an ordered array 
+        for (index in results) {
+            if (results.hasOwnProperty(index)) {
+                resultArray.push(results[index]);
+            }
+        }
+        
+	    return resultArray;
 	};
 
 	this.findFonts = function () {
