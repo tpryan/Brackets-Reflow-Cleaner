@@ -22,8 +22,6 @@ define(function (require, exports, module) {
             var editorContent = editor.document.getText();
             var newEditorContent  = "";
             var extension = editor.document.file.name.split('.').pop();
-            console.log(editor);
-            console.log(extension);
 
             if (extension === "css") {
                 var reflowCSSExtractor = new ReflowCSSExtractor(editorContent);
@@ -37,7 +35,9 @@ define(function (require, exports, module) {
                 var reflowHTMLExtractor = new ReflowHTMLExtractor(editorContent, $);
                 reflowHTMLExtractor.processHTML();
                 var doc = reflowHTMLExtractor.htmldoc;
-                newEditorContent = "<!DOCTYPE html>" + '\n' + "<html>" + '\n' +  doc.documentElement.innerHTML + '\n' + "</html>";
+                newEditorContent = "<!DOCTYPE html>" + '\n' +
+                                    "<html>" + '\n' +
+                                    doc.documentElement.innerHTML + '\n' + "</html>";
                 editor.document.setText(newEditorContent);
             }
 
