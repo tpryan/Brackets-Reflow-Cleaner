@@ -173,30 +173,51 @@ var ReflowCSSExtractor = function (csscontent) {
     this.sheet = sheet;
     this.createReportColorLine = function (colorObj) {
         var space = " ";
-        var colorItem = "//";
-        var rgbString = "rgb(" + colorObj.rgb.r + "," + colorObj.rgb.g + "," + colorObj.rgb.b + ")" + "\t";
+        var colorItem = "// ";
+        var rgbString = "rgb(" + colorObj.rgb.r + "," + colorObj.rgb.g + "," + colorObj.rgb.b + ")";
         var i = 0;
         var j = 0;
+        
+        
+        colorItem += colorObj.hex;
+        
+        colorItem += this.nSpaces(2);
+        
+        colorItem += rgbString;
+        
+        colorItem += this.nSpaces(18 - rgbString.length);
+        
         colorItem += colorObj.name;
 
-        for (i = 0; i < 25 - colorObj.name.length; i++) {
-            colorItem += space;
+        colorItem += this.nSpaces(16 - colorObj.name.length);
+        
+        colorItem += this.nSpaces(2 - colorObj.count.toString().length);
+        
+        if (colorObj.count === 1) {
+            colorItem += colorObj.count + " time ";
+        } else {
+            colorItem += colorObj.count + " times";
         }
+            
+        colorItem += this.nSpaces(2);
 
 
-        colorItem += colorObj.hex + "\t";
-        colorItem += rgbString;
-
-        for (j = 0; j < 15 - rgbString.length; j++) {
-            rgbString += space;
-        }
-
-        colorItem += colorObj.count + " times" + "\t";
         if (colorObj.usedAsBackground) {
-            colorItem += "background" + "\t";
+            colorItem += "background";
         }
         
+        console.log(colorObj);
+        
         return colorItem;
+    };
+    
+    this.nSpaces = function (count) {
+        var i = 0;
+        var result = "";
+        for (i = 0; i < count; i++) {
+            result += " ";
+        }
+        return result;
     };
 
 	this.createReport = function () {
@@ -276,13 +297,14 @@ var ReflowCSSExtractor = function (csscontent) {
                             result[color].count++;
                         } else {
                             result[color] = {};
-                            result[color].usedAsBackground = (rule.property === "background-color");
                             result[color].count = 1;
                             result[color].name = this.hexToName(color);
                             result[color].hex = color;
                             result[color].rgb = this.hexToRGB(color);
                             result[color].original = rule.valueText;
                         }
+                        
+                        result[color].usedAsBackground = (rule.property === "background-color");
                     }
                 }
             }
@@ -444,7 +466,7 @@ var ReflowCSSExtractor = function (csscontent) {
 		var index = differenceArray.indexOf(lowest);
 
 		//Bumm, here is the closest color from the array
-		return "close to " + nameArray[index];
+		return "*" + nameArray[index];
 
 	};
 
