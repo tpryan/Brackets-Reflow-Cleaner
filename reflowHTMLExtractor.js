@@ -51,11 +51,48 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
             jQuery(this).innerhtml = jQuery.trim(jQuery(this).innerhtml);
 		});
 	};
+    
+    this.classifyImagesAndRemoveID = function () {
+		this.jQuery("img", this.htmldoc).each(function (i, obj) {
+            var k = 0;
+            var $obj = jQuery(obj);
+            var classes = $obj.attr("id").split("_");
+            
+            for (k = 1; k < classes.length; k++) {
+                if (classes[k].indexOf("png") !== 0 &&
+                        classes[k].indexOf("jpg") !== 0 &&
+                        classes[k].indexOf("gif") !== 0) {
+                    $obj.addClass(classes[k]);
+                }
+            }
+            $obj.removeAttr("id");
+            $obj.removeClass("image");
+            
+            if ($obj.attr("class").length === 0) {
+                $obj.removeAttr("class");
+            }
+            
+        });
+	};
 
 	this.changeIDToElement = function (type) {
-		var el = this.jQuery("[id^= " + type +  "]", this.htmldoc);
-		el.removeAttr("id");
-		el.changeElementType(type);
+		this.jQuery("[id^= " + type +  "]", this.htmldoc).each(function (i, obj) {
+        
+            var k = 0;
+            var $obj = jQuery(obj);
+            var original_id = $obj.attr("id");
+            
+            //preserve classes
+            if (original_id.indexOf("_") > -1) {
+                var classes = original_id.split("_");
+                for (k = 1; k < classes.length; k++) {
+                    $obj.addClass(classes[k]);
+                }
+            }
+            
+            $obj.removeAttr("id");
+            $obj.changeElementType(type);
+        });
 	};
 
 	this.processHTML = function () {
@@ -75,6 +112,7 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 		this.removeClearFixes();
 		this.trimWhitespace();
 		this.removeTextSpans();
+        this.classifyImagesAndRemoveID();
 	};
 
 
