@@ -1,5 +1,6 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 150 */
-/*global define, CSSParser */
+/*global define, CSSParser, jscsspStyleRule, jscsspDeclaration, jscsspVariable */
+
 
 var i = 0;
 var color = "";
@@ -171,6 +172,7 @@ var ReflowCSSExtractor = function (csscontent) {
 	var parser = new CSSParser();
 	var sheet = parser.parse(csscontent, false, true);
     this.sheet = sheet;
+    
     this.createReportColorLine = function (colorObj) {
         var space = " ";
         var colorItem = "// ";
@@ -210,6 +212,133 @@ var ReflowCSSExtractor = function (csscontent) {
         return colorItem;
     };
     
+    this.extractClasses = function () {
+        var rule = {};
+        var i = 0;
+        var j = 0;
+        var classArray = [];
+        var classname = "";
+        var selectorArray = [];
+        var tempClass = "";
+		for (i = 0; i < sheet.cssRules.length; i++) {
+            if (sheet.cssRules[i].type === 1) {
+                rule = sheet.cssRules[i];
+                if (rule.mSelectorText.indexOf("_") > -1) {
+                    selectorArray = rule.mSelectorText.split("_");
+                
+                    //start at second item because I don't care about the first part for a class
+                    for (j = 1; j < selectorArray.length; j++) {
+                        tempClass = selectorArray[j];
+                        if (!this.isPictureFormatName(tempClass)) {
+                            console.log(tempClass);
+                            if (typeof classArray[tempClass] !== "undefined") {
+                                classArray[tempClass].ruleArray.push(rule);
+                            } else {
+                                classArray[tempClass] = {};
+                                classArray[tempClass].ruleArray = [];
+                                classArray[tempClass].ruleArray.push(rule);
+                            }
+                        }
+                    }
+                    
+                }
+            }
+	    }
+        
+        for (classname in classArray) {
+            if (classArray.hasOwnProperty(classname)) {
+                /*jslint newcap: true */
+                tempClass = classArray[classname];
+                tempClass.cssRule = new jscsspStyleRule();
+                tempClass.cssRule.mSelectorText = "." + classname;
+                
+                if (tempClass.ruleArray.length === 1) {
+                    tempClass.cssRule.declarations = tempClass.ruleArray[0].declarations;
+                } else {
+                    tempClass.cssRule.declarations = this.findCommonProperties(tempClass.ruleArray);
+                }
+            }
+        }
+		return classArray;
+    };
+    
+    this.findCommonProperties = function (ruleArray) {
+        console.log(ruleArray);
+        var i = 0;
+        var j = 0;
+        var props = [];
+        var declaration = {};
+        var value = "";
+        var propname = "";
+        var result = [];
+        
+        //start with first item in array
+        for (j = 0; j < ruleArray[0].declarations.length; j++) {
+            declaration = ruleArray[0].declarations[j];
+            props[declaration.property] = {};
+            props[declaration.property].value = declaration.valueText;
+            props[declaration.property].count = 1;
+        }
+        
+        for (i = 1; i < ruleArray.length; i++) {
+            for (j = 0; j < ruleArray[i].declarations.length; j++) {
+                declaration = ruleArray[i].declarations[j];
+                if (props.hasOwnProperty(declaration.property) &&
+                        props[declaration.property].value ===  declaration.valueText) {
+                    props[declaration.property].count++;
+                } else {
+                    delete props[declaration.property];
+                }
+            }
+        }
+        
+        for (propname in props) {
+            if (props.hasOwnProperty(propname) && props[propname].count > 1) {
+                /*jslint newcap: true */
+                declaration = new jscsspDeclaration();
+                declaration.property = propname;
+                value = new jscsspVariable(1, null);
+                value.value = props[propname].value;
+                declaration.values = [value];
+                declaration.valueText = props[propname].value;
+                declaration.parsedCssText = propname + ": " + props[propname].value + ";";
+                console.log(declaration);
+                result.push(declaration);
+                
+            }
+        }
+        
+        console.log(result);
+        
+        return result;
+    };
+    
+    this.createClassCode = function () {
+        var classArray = this.extractClasses();
+        var result = "";
+        var classname = "";
+        
+        for (classname in classArray) {
+            if (classArray.hasOwnProperty(classname)) {
+                result += "/* class: " + classname + " used ";
+                result += classArray[classname].ruleArray.length + " times */" + "\n";
+                result += classArray[classname].cssRule.cssText() + "\n\n";
+            }
+        }
+        
+        return result;
+    };
+    
+    this.isPictureFormatName = function (str) {
+        if ((str.indexOf("png") === 0) ||
+                (str.indexOf("jpg") === 0) ||
+                (str.indexOf("gif") === 0)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     this.nSpaces = function (count) {
         var i = 0;
         var result = "";
@@ -219,7 +348,15 @@ var ReflowCSSExtractor = function (csscontent) {
         return result;
     };
 
-	this.createReport = function () {
+    this.createReport = function () {
+        var colorsAndFonts = this.createColorsAndFunctionsReport();
+        var breakpoints = this.createBreakPointsCode();
+        var classes = this.createClassCode();
+        var report = colorsAndFonts + breakpoints + classes;
+        return report;
+    };
+    
+	this.createColorsAndFunctionsReport = function () {
 
 		var colors = this.findColors();
 		var fonts = this.findFonts();
