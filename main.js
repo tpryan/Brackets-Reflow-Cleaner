@@ -25,9 +25,7 @@ define(function (require, exports, module) {
 
             if (extension === "css") {
                 var reflowCSSExtractor = new ReflowCSSExtractor(editorContent);
-                var report = reflowCSSExtractor.createReport();
-                var breakpoints = reflowCSSExtractor.createBreakPointsCode();
-                newEditorContent  = report + breakpoints;
+                newEditorContent  = reflowCSSExtractor.createReport();
 
                 editor.document.setText(newEditorContent);
 
