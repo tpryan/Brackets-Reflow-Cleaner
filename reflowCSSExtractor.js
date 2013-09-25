@@ -230,7 +230,6 @@ var ReflowCSSExtractor = function (csscontent) {
                     for (j = 1; j < selectorArray.length; j++) {
                         tempClass = selectorArray[j];
                         if (!this.isPictureFormatName(tempClass)) {
-                            console.log(tempClass);
                             if (typeof classArray[tempClass] !== "undefined") {
                                 classArray[tempClass].ruleArray.push(rule);
                             } else {
@@ -263,7 +262,6 @@ var ReflowCSSExtractor = function (csscontent) {
     };
     
     this.findCommonProperties = function (ruleArray) {
-        console.log(ruleArray);
         var i = 0;
         var j = 0;
         var props = [];
@@ -302,13 +300,11 @@ var ReflowCSSExtractor = function (csscontent) {
                 declaration.values = [value];
                 declaration.valueText = props[propname].value;
                 declaration.parsedCssText = propname + ": " + props[propname].value + ";";
-                console.log(declaration);
                 result.push(declaration);
                 
             }
         }
         
-        console.log(result);
         
         return result;
     };
@@ -317,15 +313,84 @@ var ReflowCSSExtractor = function (csscontent) {
         var classArray = this.extractClasses();
         var result = "";
         var classname = "";
+        var classObj = {};
         
         for (classname in classArray) {
             if (classArray.hasOwnProperty(classname)) {
+                classObj = classArray[classname];
+                classObj = this.shorthandProp(classObj, "margin");
+                classObj = this.shorthandProp(classObj, "padding");
                 result += "/* class: " + classname + " used ";
-                result += classArray[classname].ruleArray.length + " times */" + "\n";
-                result += classArray[classname].cssRule.cssText() + "\n\n";
+                result += classObj.ruleArray.length + " times */" + "\n";
+                result += classObj.cssRule.cssText() + "\n\n";
             }
         }
         
+        return result;
+    };
+    
+    this.shorthandProp = function (classObj, property) {
+        var i = 0;
+        var ruleText = "";
+        var propObj = {props: []};
+        var declaration = {props: []};
+        var paddingdecl = {};
+        var propdecl = {};
+        var value = "";
+        var valueArray = [];
+        
+        for (i = 0; i < classObj.cssRule.declarations.length; i++) {
+            if (classObj.cssRule.declarations[i].property.indexOf(property + "-") === 0) {
+                propObj.props.push({prop: classObj.cssRule.declarations[i], index: i});
+            }
+        }
+        
+        if (propObj.props.length === 4) {
+            ruleText = "";
+            valueArray = [];
+            for (i = 0; i < propObj.props.length; i++) {
+                ruleText += propObj.props[i].prop.valueText;
+                
+                if (i < 3) {
+                    ruleText += " ";
+                }
+                
+                /*jslint newcap: true */
+                value = new jscsspVariable(1, null);
+                value.value = propObj.props[i].prop.valueText;
+                valueArray.push(value);
+                
+            }
+            
+            /*jslint newcap: true */
+            propdecl = new jscsspDeclaration();
+            propdecl.property = property;
+            propdecl.values = valueArray;
+            propdecl.valueText = ruleText;
+            propdecl.parsedCssText = property + ": " + ruleText + ";";
+            
+            for (i = propObj.props.length - 1; i >= 0; i--) {
+                delete classObj.cssRule.declarations[propObj.props[i].index];
+            }
+            
+            classObj.cssRule.declarations = this.renumberArray(classObj.cssRule.declarations);
+            classObj.cssRule.declarations.push(propdecl);
+        }
+        
+        
+        
+        return classObj;
+    };
+    
+    this.renumberArray = function (arr) {
+        var index = "";
+        var result = [];
+        
+        for (index in arr) {
+            if (arr.hasOwnProperty(index)) {
+                result.push(arr[index]);
+            }
+        }
         return result;
     };
     
