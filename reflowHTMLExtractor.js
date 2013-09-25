@@ -30,7 +30,6 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 	this.htmldoc.write(htmlcontent);
 	this.htmldoc.close();
 
-
 	this.removeClearFixes = function () {
 		jQuery(".clearfix", this.htmldoc).each(function (index) {
 			jQuery(this).removeClass("clearfix");
@@ -114,6 +113,5 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 		this.removeTextSpans();
         this.classifyImagesAndRemoveID();
 	};
-
 
 };
