@@ -98,6 +98,7 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 		this.changeIDToElement("header");
 		this.changeIDToElement("footer");
 		this.changeIDToElement("ul");
+        this.changeIDToElement("ol");
 		this.changeIDToElement("li");
 		this.changeIDToElement("h1");
 		this.changeIDToElement("h2");
@@ -108,6 +109,7 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 		this.changeIDToElement("article");
 		this.changeIDToElement("section");
 		this.changeIDToElement("time");
+        this.changeIDToElement("address");
 		this.removeClearFixes();
 		this.trimWhitespace();
 		this.removeTextSpans();
