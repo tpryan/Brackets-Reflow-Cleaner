@@ -314,22 +314,27 @@ var ReflowCSSExtractor = function (csscontent) {
         var result = "";
         var classname = "";
         var classObj = {};
+        var i = 0;
         
-        for (classname in classArray) {
+        
+        for (classname in classArray){
             if (classArray.hasOwnProperty(classname)) {
                 classObj = classArray[classname];
                 classObj = this.shorthandProp(classObj, "margin");
                 classObj = this.shorthandProp(classObj, "padding");
-                result += "/* class: " + classname + " used ";
-                result += classObj.ruleArray.length + " times */" + "\n";
-                result += classObj.cssRule.cssText() + "\n\n";
+                
+                if (typeof classObj.cssRule != 'undefined') {
+                    result += "/* class: " + classname + " used ";
+                    result += classObj.ruleArray.length + " times */" + "\n";
+                    result += classObj.cssRule.cssText() + "\n\n";
+                }
             }
         }
         
         return result;
     };
     
-    this.shorthandProp = function (classObj, property) {
+    this.shorthandProp = function (classObj, propertyToTarget) {
         var i = 0;
         var ruleText = "";
         var propObj = {props: []};
@@ -340,8 +345,10 @@ var ReflowCSSExtractor = function (csscontent) {
         var valueArray = [];
         
         for (i = 0; i < classObj.cssRule.declarations.length; i++) {
-            if (classObj.cssRule.declarations[i].property.indexOf(property + "-") === 0) {
-                propObj.props.push({prop: classObj.cssRule.declarations[i], index: i});
+            if(typeof classObj.cssRule.declarations[i] != 'undefined'){
+                if (classObj.cssRule.declarations[i].property.indexOf(propertyToTarget + "-") === 0) {
+                    propObj.props.push({prop: classObj.cssRule.declarations[i], index: i});
+                }
             }
         }
         
@@ -364,10 +371,10 @@ var ReflowCSSExtractor = function (csscontent) {
             
             /*jslint newcap: true */
             propdecl = new jscsspDeclaration();
-            propdecl.property = property;
+            propdecl.property = propertyToTarget;
             propdecl.values = valueArray;
             propdecl.valueText = ruleText;
-            propdecl.parsedCssText = property + ": " + ruleText + ";";
+            propdecl.parsedCssText = propertyToTarget + ": " + ruleText + ";";
             
             for (i = propObj.props.length - 1; i >= 0; i--) {
                 delete classObj.cssRule.declarations[propObj.props[i].index];
