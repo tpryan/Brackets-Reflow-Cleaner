@@ -245,7 +245,6 @@ var ReflowCSSExtractor = function (csscontent) {
             }
 	    }
 
-        //console.log(classArray);
 
         for (classname in classArray) {
             var matchingClassName = this.findMatchingClassName(classname, classNameArray);
@@ -253,20 +252,12 @@ var ReflowCSSExtractor = function (csscontent) {
 
             if (matchingClassName.length > 0) {
                 console.log("Rename Class", classname, matchingClassName,classArray[classname] );
-                console.log(classArray[classname].cssRule.mSelectorText);
 
             } else {
                 console.log("Don't Rename Class");
                 classNameArray.push(classname);
             }
-
-            
-
-
         }
-        console.log(classNameArray);
-
-
         
         for (classname in classArray) {
             if (classArray.hasOwnProperty(classname)) {
@@ -373,6 +364,7 @@ var ReflowCSSExtractor = function (csscontent) {
     };
     
     this.shorthandProp = function (classObj, propertyToTarget) {
+        console.log("shorthand Prop called")
         var i = 0;
         var ruleText = "";
         var propObj = {props: []};
