@@ -110,6 +110,8 @@ var ReflowHTMLExtractor = function (htmlcontent, jQuery) {
 		this.changeIDToElement("section");
 		this.changeIDToElement("time");
         this.changeIDToElement("address");
+        this.changeIDToElement("div");
+        this.changeIDToElement("nav");
 		this.removeClearFixes();
 		this.trimWhitespace();
 		this.removeTextSpans();

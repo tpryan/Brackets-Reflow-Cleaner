@@ -218,6 +218,7 @@ var ReflowCSSExtractor = function (csscontent) {
         var j = 0;
         var classArray = [];
         var classname = "";
+        var classNameArray = [];
         var selectorArray = [];
         var tempClass = "";
 		for (i = 0; i < sheet.cssRules.length; i++) {
@@ -228,8 +229,8 @@ var ReflowCSSExtractor = function (csscontent) {
                 
                     //start at second item because I don't care about the first part for a class
                     for (j = 1; j < selectorArray.length; j++) {
-                        tempClass = selectorArray[j];
-                        if (!this.isPictureFormatName(tempClass)) {
+                        tempClass = selectorArray[j].replace(/\d/g,'');
+                        if (!this.isPictureFormatName(tempClass) && tempClass.length > 0) {
                             if (typeof classArray[tempClass] !== "undefined") {
                                 classArray[tempClass].ruleArray.push(rule);
                             } else {
@@ -243,6 +244,29 @@ var ReflowCSSExtractor = function (csscontent) {
                 }
             }
 	    }
+
+        //console.log(classArray);
+
+        for (classname in classArray) {
+            var matchingClassName = this.findMatchingClassName(classname, classNameArray);
+
+
+            if (matchingClassName.length > 0) {
+                console.log("Rename Class", classname, matchingClassName,classArray[classname] );
+                console.log(classArray[classname].cssRule.mSelectorText);
+
+            } else {
+                console.log("Don't Rename Class");
+                classNameArray.push(classname);
+            }
+
+            
+
+
+        }
+        console.log(classNameArray);
+
+
         
         for (classname in classArray) {
             if (classArray.hasOwnProperty(classname)) {
@@ -259,6 +283,20 @@ var ReflowCSSExtractor = function (csscontent) {
             }
         }
 		return classArray;
+    };
+
+    this.findMatchingClassName = function (className, classNameArray) {
+        var matchingClassName = "";
+        var i = 0;
+        
+        for (i = 0; i < sheet.cssRules.length; i++) {
+            if (className.replace(/\d/g,'') == classNameArray[i]){
+                matchingClassName = classNameArray[i];
+                break;
+            }
+        }    
+
+        return matchingClassName;
     };
     
     this.findCommonProperties = function (ruleArray) {
