@@ -460,10 +460,12 @@ var ReflowCSSExtractor = function (csscontent) {
 
 		var colors = this.findColors();
 		var fonts = this.findFonts();
+        var gradients = this.findGradients();
 		var report = "";
 		var space = " ";
         var color = "";
         var font = "";
+        var gradient = "";
         
         var sortFunction = function (a, b) {
             if (a.count > b.count) {
@@ -506,8 +508,22 @@ var ReflowCSSExtractor = function (csscontent) {
 			
 		}
 
-		report += "*/" + "\n";
+
+        report += "//---------------------------------------------------------------------" + "\n";
+        report += "\n";
+        report += "****** Gradients extracted from Reflow ******" + "\n";
         
+
+
+        for (gradient in gradients) {
+            var gradientObj = gradients[gradient];
+            var gradientItem = "//";
+            gradientItem += gradientObj.name + "\t";
+            gradientItem += gradientObj.count + " times" + "\t";
+            report += gradientItem + "\n";
+            
+        }
+        report += "*/" + "\n";
 
 		return report;
 	};
@@ -623,6 +639,32 @@ var ReflowCSSExtractor = function (csscontent) {
 	    }
 		return result;
 	};
+
+    this.findGradients = function () {
+        var result = [];
+        var i = 0;
+        var j = 0;
+        for (i = 0; i < sheet.cssRules.length; i++) {
+            if (sheet.cssRules[i].type === 1) {
+                for (j = 0; j < sheet.cssRules[i].declarations.length; j++) {
+    
+                    if (sheet.cssRules[i].declarations[j].property === "background-image" &&
+                        sheet.cssRules[i].declarations[j].valueText.indexOf("-webkit-linear-gradient") >= 0 ){
+                        var gradient = sheet.cssRules[i].declarations[j].valueText;
+                        if (typeof result[gradient] !== "undefined") {
+                            result[gradient].count++;
+                        } else {
+                            result[gradient] = {};
+                            result[gradient].count = 1;
+                            result[gradient].name = gradient;
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    };
 
 	this.findBreakPoints = function () {
 		var result = [];
