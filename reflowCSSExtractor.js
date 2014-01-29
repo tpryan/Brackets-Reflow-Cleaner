@@ -254,7 +254,6 @@ var ReflowCSSExtractor = function (csscontent) {
                 console.log("Rename Class", classname, matchingClassName,classArray[classname] );
 
             } else {
-                console.log("Don't Rename Class");
                 classNameArray.push(classname);
             }
         }
@@ -364,7 +363,6 @@ var ReflowCSSExtractor = function (csscontent) {
     };
     
     this.shorthandProp = function (classObj, propertyToTarget) {
-        console.log("shorthand Prop called")
         var i = 0;
         var ruleText = "";
         var propObj = {props: []};
@@ -541,6 +539,7 @@ var ReflowCSSExtractor = function (csscontent) {
         var resultArray = [];
         var index = "";
         var i = 0;
+        var k = 0;
 		for (i = 0; i < sheet.cssRules.length; i++) {
             var j = 0;
             
@@ -550,19 +549,22 @@ var ReflowCSSExtractor = function (csscontent) {
                     var rule = sheet.cssRules[i].declarations[j];
                     if (rule.property === "color" || rule.property === "background-color") {
                         var color = this.toHex(rule.valueText);
-            
-                        if (typeof results[color] !== "undefined") {
-                            results[color].count++;
-                        } else {
-                            results[color] = {};
-                            results[color].count = 1;
-                            results[color].name = this.hexToName(color);
-                            results[color].hex = color;
-                            results[color].rgb = this.hexToRGB(color);
-                            results[color].original = rule.valueText;
-                        }
+                        results = this.appendColorToArray(color, rule, results);
                         
-                        results[color].usedAsBackground = (rule.property === "background-color");
+                        
+                    } else if (rule.property === "background-image" && rule.valueText.indexOf("-webkit-linear-gradient") >=0 ) {
+                        var tempString = rule.valueText.replace("-webkit-linear-gradient(", "");
+                        var tempArray = tempString.split("%");
+                        for (k = 0; k < tempArray.length -1; k++){
+                            var tempColor = "";
+                            if (k == 0) {
+                                tempColor = tempArray[k].split(",")[1].split(" ")[0];
+                            }  else {
+                                tempColor = tempArray[k].split(" ")[0].replace(",","");
+                            }
+                            var color = this.toHex(tempColor);
+                            results = this.appendColorToArray(color, rule, results);
+                        }
                     }
                 }
             }
@@ -577,6 +579,25 @@ var ReflowCSSExtractor = function (csscontent) {
         
 	    return resultArray;
 	};
+
+    this.appendColorToArray = function (color, rule, colorArray) {
+        if (typeof colorArray[color] !== "undefined") {
+            colorArray[color].count++;
+        } else {
+            colorArray[color] = {};
+            colorArray[color].count = 1;
+            colorArray[color].usedAsBackground = false;
+            colorArray[color].name = this.hexToName(color);
+            colorArray[color].hex = color;
+            colorArray[color].rgb = this.hexToRGB(color);
+            colorArray[color].original = rule.valueText;
+        }
+
+        if (colorArray[color].usedAsBackground == false) {
+            colorArray[color].usedAsBackground = (rule.property.indexOf("background") >=0 );
+        }
+        return colorArray;
+    }
 
 	this.findFonts = function () {
 		var result = [];
