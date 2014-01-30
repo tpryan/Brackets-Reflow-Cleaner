@@ -11,9 +11,10 @@ Currently the project does the following:
 1. Removes textspan id's
 
 ### CSS
-1. Extracts color information from color and background-color
+1. Extracts color information from color, background-color, and background-image gradients.
 1. Extracts all font families.
-1. Extracts media queries. 
+1. Extracts media queries.
+1. Extracts gradient code. 
 
 ## Future
 More stuff. I want it to do more, but I'd love feedback on what that more is. 

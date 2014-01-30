@@ -3,7 +3,7 @@
     "title": "Brackets Reflow Cleaner",
     "description": "Cleans Adobe Edge Reflow content into something usable in a handcoded project.",
     "homepage": "https://github.com/tpryan/Brackets-Reflow-Cleaner",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Terry Ryan <terryr@adobe.com> (http://terrenceryan.com)",
     "license": "MIT",
     "engines": {
