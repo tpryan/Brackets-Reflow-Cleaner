@@ -2,6 +2,9 @@
 
 This extension hopes to clean the HTML that Adobe Edge Reflow makes in order to provide a better starting spot for hand coded projects.
 
+## Author
+The author of this extension is Terrence Ryan (https://github.com/tpryan). I merely added a workaround to get the CSS extractor to work again with a new version of Brackets/Adobe Edge Code CC.
+
 ## Abilities 
 Currently the project does the following:
 
